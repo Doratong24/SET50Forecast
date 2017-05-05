@@ -183,10 +183,10 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
     
     
     tableSVM = table(Actual = UpDownT, Fitted = fitSVM)
-    TP = TP+(100*tableTree[2,2]/(tableTree[1,1]+tableTree[1,2]+tableTree[2,1]+tableTree[2,2]))
-    TN = TN+(100*tableTree[1,1]/(tableTree[1,1]+tableTree[1,2]+tableTree[2,1]+tableTree[2,2]))
-    FP = FP + (100*tableTree[1,2]/(tableTree[1,1]+tableTree[1,2]+tableTree[2,1]+tableTree[2,2]))
-    FN = FN + (100*tableTree[2,1]/(tableTree[1,1]+tableTree[1,2]+tableTree[2,1]+tableTree[2,2]))
+    TP = TP+(100*tableSVM[2,2]/(tableSVM[1,1]+tableSVM[1,2]+tableSVM[2,1]+tableSVM[2,2]))
+    TN = TN+(100*tableSVM[1,1]/(tableSVM[1,1]+tableSVM[1,2]+tableSVM[2,1]+tableSVM[2,2]))
+    FP = FP + (100*tableSVM[1,2]/(tableSVM[1,1]+tableSVM[1,2]+tableSVM[2,1]+tableSVM[2,2]))
+    FN = FN + (100*tableSVM[2,1]/(tableSVM[1,1]+tableSVM[1,2]+tableSVM[2,1]+tableSVM[2,2]))
     
     tableTree2 = table(Actual = UpDownT, Fitted = fitResult)
     totalPercent = tryCatch(tableTree2[2,2],error = function(e) 0) + tryCatch(tableTree2[1,1],error = function(e) 0)+tryCatch(tableTree2[2,1],error = function(e) 0)+tryCatch(tableTree2[1,2],error = function(e) 0)
