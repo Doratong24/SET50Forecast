@@ -56,8 +56,8 @@ shinyUI(pageWithSidebar(
     uiOutput('matrixSVM'),
     uiOutput('evalSVM'),
     
-    # ("Average time"),
-    # htmlOutput("avgTimeSVM"),
+    ("Average time"),
+    htmlOutput("avgTimeSVM"),
     # h5("Precision"),
     # htmlOutput("precisionSVM"),
     # h5("Recall"),
@@ -67,9 +67,9 @@ shinyUI(pageWithSidebar(
     
     h3("Tree"),
     uiOutput('matrixTree'),
-    uiOutput('evalTree')
-    # h5("Average time"),
-    # htmlOutput("avgTimeTree"),
+    uiOutput('evalTree'),
+    h5("Average time"),
+    htmlOutput("avgTimeTree")
     # h5("Precision"),
     # htmlOutput("precisionTree"),
     # h5("Recall"),
