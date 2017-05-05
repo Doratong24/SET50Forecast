@@ -7,11 +7,10 @@ if(length(new.packages)) install.packages(new.packages)
 
 library(readr)
 if(exists("SET50") == FALSE){
-  dataset <- read_csv("~/SET50.csv", 
+  SET50 <- read_csv("SET50.csv", 
   col_types = cols(Timestamp = col_date(format = "%d/%m/%y"), 
   X7 = col_skip()))
   }
-
 
 
 library("e1071")
