@@ -27,6 +27,7 @@ shinyServer(function(input, output) {
                    input$cmoCheckBox,
                    input$cciCheckBox,
                    input$wprCheckBox,1),",")[[1]]
+      print("Done")
   }else{" "}
     
   })
