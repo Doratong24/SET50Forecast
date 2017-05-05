@@ -1,5 +1,10 @@
 #library("quantmod")
 #library("lubridate")
+
+list.of.packages <- c("e1071", "TTR","rminer","rpart")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 library("e1071")
 library("TTR")
 library("rminer")
