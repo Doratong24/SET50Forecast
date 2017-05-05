@@ -1,9 +1,18 @@
 #library("quantmod")
 #library("lubridate")
 
-list.of.packages <- c("e1071", "TTR","rminer","rpart")
+list.of.packages <- c("e1071", "TTR","rminer","rpart","readr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
+
+library(readr)
+if(exists("SET50") == FALSE){
+  dataset <- read_csv("~/Desktop/TSP/SET50.csv", 
+  col_types = cols(Timestamp = col_date(format = "%d/%m/%y"), 
+  X7 = col_skip()))
+  }
+
+
 
 library("e1071")
 library("TTR")
