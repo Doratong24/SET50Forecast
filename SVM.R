@@ -182,7 +182,7 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
     
     
     
-    tableTree = table(Actual = UpDownT, Fitted = fitSVM)
+    tableSVM = table(Actual = UpDownT, Fitted = fitSVM)
     TP = TP+(100*tableTree[2,2]/(tableTree[1,1]+tableTree[1,2]+tableTree[2,1]+tableTree[2,2]))
     TN = TN+(100*tableTree[1,1]/(tableTree[1,1]+tableTree[1,2]+tableTree[2,1]+tableTree[2,2]))
     FP = FP + (100*tableTree[1,2]/(tableTree[1,1]+tableTree[1,2]+tableTree[2,1]+tableTree[2,2]))
@@ -194,6 +194,9 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
     TN2 = TN2+(100*tryCatch(tableTree2[1,1],error = function(e) 0)/totalPercent)
     FP2 = FP2 + (100*tryCatch(tableTree2[1,2],error = function(e) 0)/totalPercent)
     FN2 = FN2 + (100*tryCatch(tableTree2[2,1],error = function(e) 0)/totalPercent)
+    
+    print(tableSVM)
+    print(tableTree2)
   }
   
   
