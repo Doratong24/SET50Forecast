@@ -225,6 +225,8 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
                   fAccSVM,fAccTree,
                   sep = ",")
   
+  print(result)
+  
   return(result)
 }
 
