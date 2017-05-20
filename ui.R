@@ -14,32 +14,32 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     
     checkboxInput("emaCheckBox","EMA",value = FALSE),
-    checkboxInput("obvCheckBox","OBV",value = FALSE),
-    checkboxInput("macdCheckBox","MACD",value = FALSE),
+    checkboxInput("obvCheckBox","OBV",value = TRUE),
+    checkboxInput("macdCheckBox","MACD",value = TRUE),
     checkboxInput("rsiCheckBox","RSI",value = FALSE),
-    checkboxInput("evwmaCheckBox","EVWMA",value = FALSE),
+    checkboxInput("evwmaCheckBox","EVWMA",value = TRUE),
     checkboxInput("rocCheckBox","ROC",value = FALSE),
     checkboxInput("cmoCheckBox","CMO",value = FALSE),
-    checkboxInput("cciCheckBox","CCI",value = FALSE),
+    checkboxInput("cciCheckBox","CCI",value = TRUE),
     checkboxInput("wprCheckBox","WPR",value = FALSE),
 
     sliderInput("lag", 
                 "Lagged days", 
-                value = 1,
-                min = 1,
+                value = 110,
+                min = 0,
                 max = 200
                 ),
     
-    # sliderInput("ahead", 
-    #             "Predict x days from now", 
+    # sliderInput("ahead",
+    #             "Predict x days from now",
     #             value = 1,
     #             min = 1,
-    #             max = 500
+    #             max = 100
     # ),
   
   sliderInput("fold", 
                "N-folds", 
-               value = 5,
+               value = 10,
                min = 2,
                max = 20
               ),
@@ -50,9 +50,23 @@ shinyUI(pageWithSidebar(
   # Show a tabset that includes a plot, summary, and table view
   # of the generated distribution
   mainPanel(
+    
+ 
    
     verbatimTextOutput("txt"),
     h3("SVM"),
+    
+    radioButtons("kernel", "Kernal Function:",
+                 choiceNames = list(
+                   "Radial Basis Function",
+                   "Polynomial",
+                   "Linear"
+                 ),
+                 inline = TRUE,
+                 choiceValues = list(
+                   "radial", "polynomial", "linear"
+                 )),
+    
     uiOutput('matrixSVM'),
     uiOutput('evalSVM'),
     

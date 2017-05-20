@@ -26,7 +26,7 @@ shinyServer(function(input, output) {
                    input$rocCheckBox,
                    input$cmoCheckBox,
                    input$cciCheckBox,
-                   input$wprCheckBox,1),",")[[1]]
+                   input$wprCheckBox,1,input$kernel),",")[[1]]
     
   }else{" "}
     

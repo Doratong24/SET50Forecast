@@ -19,8 +19,22 @@ library("rminer")
 library("rpart")
 
 
+# windowDays = 0
+# foldNumber = 10
+# emaB = FALSE
+# obvB = TRUE
+# macdB = TRUE
+# rsiB = FALSE
+# vmaB = FALSE
+# rocB=FALSE
+# cmoB=TRUE
+# cciB = FALSE
+# wprB = FALSE
+# ahead = 100
+# ker = "radial"
+#svmT(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,wprB,ahead,ker)
 
-svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,wprB,ahead){
+svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,wprB,ahead,ker){
   Price_Ema10 <- EMA(SET50$SET50.Open, n = 10, wilder = FALSE, ration = NULL)
   obvData <- OBV(SET50$SET50.Open, SET50$Vol)
   macdtemp = MACD(SET50$SET50.Close, nFast = 12, nSlow = 26, nSig = 9, maType = EMA, percent = TRUE)
@@ -33,9 +47,11 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
   wpr <- WPR(SET50$SET50.Close,n=14)
   
   features <- cbind(Price_Ema10, obvData, macd, rsi, vma,roc,cmo,cci,wpr)
-  features<-features[34:(nrow(features)-1),]
+  #features<-features[34:(nrow(features)-ahead),]
   
+  features<-features[34:(nrow(features)-ahead),]
   features <- scale(features)
+  
   
   # for (col in 1:ncol(features)){
   #   features[,col] = (features[,col] - min(features[,col]))/(max(features[,col])-min(features[,col]))
@@ -43,12 +59,12 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
   # }
   
   
-  Price1 = SET50$SET50.Close[2:length(SET50$SET50.Close)]
-  Price2 = SET50$SET50.Close[1:(length(SET50$SET50.Close)-1)]
-  
+  Price1 = SET50$SET50.Close[(34+ahead):length(SET50$SET50.Close)]
+  Price2 = SET50$SET50.Close[34:(length(SET50$SET50.Close)-ahead)]
   Price <- Price2-Price1
-  Price <- Price[34:length(Price)]
-  UpDown <- ifelse(Price > 0, 'Up', 'Down')
+  #Price <- Price[34:length(Price)]
+  #UpDown <- ifelse(Price < 0, 'Up', 'Down')
+  UpDown <- ifelse(Price > 0, 1, 0)
   
   closePrice <-SET50$SET50.Close[34:(nrow(SET50)-1)]
   
@@ -67,72 +83,78 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
   totalTime = 0
   totalTime2 = 0
   
-  featureSliding = c(1:(nrow(features)-windowDays))
-  #while(windowDays<=200){
-  if(emaB){
-    emaLag = CasesSeries(features[,1], c(1:windowDays))
-    colnames(emaLag) <- paste("EMA", colnames(emaLag), sep = "_")
-    featureSliding = cbind(featureSliding,emaLag)
-    print("EMA")
-  }
-  if(obvB){
-    obvLag = CasesSeries(features[,2], c(1:windowDays))
-    colnames(obvLag) <- paste("OBV", colnames(obvLag), sep = "_")
-    featureSliding = cbind(featureSliding,obvLag)
-  }
-  if(macdB){
-    macdLag = CasesSeries(features[,3], c(1:windowDays))
-    colnames(macdLag) <- paste("MACD", colnames(macdLag), sep = "_")
-    featureSliding = cbind(featureSliding,macdLag)
-  }
-  if(vmaB){
-  vmaLag = CasesSeries(features[,5], c(1:windowDays))
-  colnames(vmaLag) <- paste("VMA", colnames(vmaLag), sep = "_")
-  featureSliding = cbind(featureSliding,vmaLag)
-  }
-  if(rsiB){
-  rsiLag = CasesSeries(features[,4], c(1:windowDays))
-  colnames(rsiLag) <- paste("RSI", colnames(rsiLag), sep = "_")
-  featureSliding = cbind(featureSliding,rsiLag)
-  }
+  if(windowDays>0){
   
-  if(rocB){
-    rocLag = CasesSeries(features[,6], c(1:windowDays))
-    colnames(rocLag) <- paste("ROC", colnames(rocLag), sep = "_")
-    featureSliding = cbind(featureSliding,rocLag)
+    featureSliding = c(1:(nrow(features)-windowDays))
+  
+    
+    if(emaB){
+      emaLag = CasesSeries(features[,1], c(1:windowDays))
+      colnames(emaLag) <- paste("EMA", colnames(emaLag), sep = "_")
+      featureSliding = cbind(featureSliding,emaLag)
+      print("EMA")
+    }
+    if(obvB){
+      obvLag = CasesSeries(features[,2], c(1:windowDays))
+      colnames(obvLag) <- paste("OBV", colnames(obvLag), sep = "_")
+      featureSliding = cbind(featureSliding,obvLag)
+    }
+    if(macdB){
+      macdLag = CasesSeries(features[,3], c(1:windowDays))
+      colnames(macdLag) <- paste("MACD", colnames(macdLag), sep = "_")
+      featureSliding = cbind(featureSliding,macdLag)
+    }
+    if(vmaB){
+    vmaLag = CasesSeries(features[,5], c(1:windowDays))
+    colnames(vmaLag) <- paste("VMA", colnames(vmaLag), sep = "_")
+    featureSliding = cbind(featureSliding,vmaLag)
+    }
+    if(rsiB){
+    rsiLag = CasesSeries(features[,4], c(1:windowDays))
+    colnames(rsiLag) <- paste("RSI", colnames(rsiLag), sep = "_")
+    featureSliding = cbind(featureSliding,rsiLag)
+    }
+    
+    if(rocB){
+      rocLag = CasesSeries(features[,6], c(1:windowDays))
+      colnames(rocLag) <- paste("ROC", colnames(rocLag), sep = "_")
+      featureSliding = cbind(featureSliding,rocLag)
+    }
+    if(cmoB){
+      cmoLag = CasesSeries(features[,7], c(1:windowDays))
+      colnames(cmoLag) <- paste("CMO", colnames(cmoLag), sep = "_")
+      featureSliding = cbind(featureSliding,cmoLag)
+    }
+    if(cciB){
+      cciLag = CasesSeries(features[,8], c(1:windowDays))
+      colnames(cciLag) <- paste("CCI", colnames(cciLag), sep = "_")
+      featureSliding = cbind(featureSliding,cciLag)
+    }
+    if(wprB){
+      wprLag = CasesSeries(features[,9], c(1:windowDays))
+      colnames(wprLag) <- paste("WPR", colnames(wprLag), sep = "_")
+      featureSliding = cbind(featureSliding,wprLag)
+    }
+    
+    #featureSliding = cbind(emaLag,obvLag,macdLag,vmaLag,rsiLag,rocLag,cmoLag,cciLag,wprLag)
+    #featureSliding = cbind(emaLag,obvLag,macdLag,vmaLag,cmoLag,rsiLag)
+    
+    #remove feature on last day
+    featureSliding[,2:ncol(featureSliding)]
+    #add  featureSliding = featureSliding[1:(nrow(featureSliding)-1),]
+    
+    resultLagTemp  = CasesSeries(UpDown, c(1:windowDays))
+     
+    #resultLag = resultLagTemp$y
+    resultUpDown = resultLagTemp$y
+    #resultUpDown = resultLag[(2):(length(resultLag))]
+  }else{
+    #featureSliding = as.data.frame(sapply(features, as.numeric)) 
+    featureSliding = features
+    resultUpDown = UpDown
+    
   }
-  if(cmoB){
-    cmoLag = CasesSeries(features[,7], c(1:windowDays))
-    colnames(cmoLag) <- paste("CMO", colnames(cmoLag), sep = "_")
-    featureSliding = cbind(featureSliding,cmoLag)
-  }
-  if(cciB){
-    cciLag = CasesSeries(features[,8], c(1:windowDays))
-    colnames(cciLag) <- paste("CCI", colnames(cciLag), sep = "_")
-    featureSliding = cbind(featureSliding,cciLag)
-  }
-  if(wprB){
-    wprLag = CasesSeries(features[,9], c(1:windowDays))
-    colnames(wprLag) <- paste("WPR", colnames(wprLag), sep = "_")
-    featureSliding = cbind(featureSliding,wprLag)
-  }
-  
-  #featureSliding = cbind(emaLag,obvLag,macdLag,vmaLag,rsiLag,rocLag,cmoLag,cciLag,wprLag)
-  #featureSliding = cbind(emaLag,obvLag,macdLag,vmaLag,cmoLag,rsiLag)
-  
-  #remove feature on last day
-  featureSliding[,2:ncol(featureSliding)]
-  featureSliding = featureSliding[1:(nrow(featureSliding)-ahead),]
-  
-  resultLagTemp  = CasesSeries(UpDown, c(1:windowDays))
-  
-  resultLag = resultLagTemp$y
-  
-  resultUpDown = resultLag[(1+ahead):(nrow(features)-windowDays)]
 
- 
-  
-  
   data2 = cbind(featureSliding,resultUpDown)
   
   data <- data2[sample(nrow(data2)),] 
@@ -147,16 +169,20 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
     testData <- data[testIndexes, ]
     trainData <- data[-testIndexes, ]
     
-    featureTrain <- trainData[,1:(ncol(trainData)-1)]
-    #closePriceTrain <- trainData[,(ncol(trainData)-1)]
-    UpDownC <- trainData[,(ncol(trainData))]
     
-    featureTest <- testData[,1:(ncol(testData)-1)]
-    closePriceTest <- testData[,ncol(testData)]
-    UpDownT <- testData[,(ncol(testData))]
+    featureTrain <- data.frame(trainData[,1:(ncol(trainData)-1)])
+    #closePriceTrain <- trainData[,(ncol(trainData)-1)]
+    #UpDownC <- trainData[,(ncol(trainData))]
+    UpDownC <- ifelse(trainData[,(ncol(trainData))] >0, 'Up', 'Down')
+    
+    
+    featureTest <- data.frame(testData[,1:(ncol(testData)-1)])
+   
+    #UpDownT <- testData[,(ncol(testData))]
+    UpDownT <- ifelse(testData[,(ncol(testData))]> 0, 'Up', 'Down')
     
     start.time <- Sys.time()
-    svmModel = svm(x = featureTrain, y = UpDownC, type = "C", kernel = "radial")
+    svmModel = svm(x = featureTrain, y = UpDownC, type = "C", kernel = ker)
     #svmModel = svm(x = featureTrain, y = UpDownC, type = "C", kernel = "polynomial",degree = 4, gamma = 3,cost = 1)
     end.time <- Sys.time()
     
@@ -206,26 +232,32 @@ svmT <- function(windowDays,foldNumber,emaB,obvB,macdB,rsiB,vmaB,rocB,cmoB,cciB,
   #                 "Tree : ",
   #                 "TP ",TP2/foldNumber,"TN ",TN2/foldNumber,"FP ",FP2/foldNumber,"FN ",FN2/foldNumber,"AvgTime " , totalTime2/foldNumber)
   
-  precisionTree = TP2/(TP2+FP2)
-  precisionSVM = TP/(TP+FP)
+  precisionTree = TP2/(TP2+FP2) *100
+  precisionSVM = TP/(TP+FP) *100
   
-  recallTree = TP2/(TP2+FN2)
-  recallSVM = TP/(TP+FN)
-  accuracyTree = (TP2+TN2)/(TP2+TN2+FP2+FN2)
-  accuracySVM = (TP+TN)/(TP+TN+FP+FN)
+  recallTree = TP2/(TP2+FN2) *100
+  recallSVM = TP/(TP+FN) *100
+  accuracyTree = (TP2+TN2)/(TP2+TN2+FP2+FN2) *100
+  accuracySVM = (TP+TN)/(TP+TN+FP+FN)* 100
   
-  fAccSVM = (2*precisionSVM*recallSVM)/(recallSVM+precisionSVM)
-  fAccTree = (2*precisionTree*recallTree)/(recallTree+precisionTree)
+  fAccSVM = (2*precisionSVM*recallSVM)/(recallSVM+precisionSVM) 
+  fAccTree = (2*precisionTree*recallTree)/(recallTree+precisionTree) 
   
-  result <- paste(TP/foldNumber,TN/foldNumber,FP/foldNumber,FN/foldNumber,totalTime/foldNumber,
-                  TP2/foldNumber,TN2/foldNumber,FP2/foldNumber,FN2/foldNumber,totalTime2/foldNumber,
-                  precisionSVM,precisionTree,
-                  recallSVM,recallTree,
-                  accuracySVM,accuracyTree,
-                  fAccSVM,fAccTree,
+  digit = 4
+  result <- paste(round(TP/foldNumber,digits = digit),round(TN/foldNumber,digits = digit),round(FP/foldNumber,digits = digit),round(FN/foldNumber, digits=digit),round(totalTime/foldNumber, digits = digit),
+                  round(TP2/foldNumber, digits= digit),round(TN2/foldNumber, digits = digit),round(FP2/foldNumber, digits = digit),round(FN2/foldNumber, digits= digit),round(totalTime2/foldNumber, digits = digit),
+                  round(precisionSVM, digits = digit),round(precisionTree, digits = digit),
+                  round(recallSVM, digits = digit),round(recallTree, digits = digit),
+                  round(accuracySVM, digits = digit),round(accuracyTree, digits = digit),
+                  round(fAccSVM, digits = digit),round(fAccTree, digits = digit),
                   sep = ",")
   
+  
+  
   print(result)
+  print("+++++++")
+  print(accuracySVM)
+  print(accuracyTree)
   
   return(result)
 }
